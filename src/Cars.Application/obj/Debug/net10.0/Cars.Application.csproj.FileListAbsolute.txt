@@ -1,0 +1,15 @@
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/bin/Debug/net10.0/Cars.Application.deps.json
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/bin/Debug/net10.0/Cars.Application.dll
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/bin/Debug/net10.0/Cars.Application.pdb
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/bin/Debug/net10.0/Cars.Domain.dll
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/bin/Debug/net10.0/Cars.Domain.pdb
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.csproj.AssemblyReference.cache
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.GeneratedMSBuildEditorConfig.editorconfig
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.AssemblyInfoInputs.cache
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.AssemblyInfo.cs
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.csproj.CoreCompileInputs.cache
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.App.3F253AC0.Up2Date
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.dll
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/refint/Cars.Application.dll
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/Cars.Application.pdb
+/home/kamil/Studies/Term 5/Web and Net Apps/CarsWebApplication/src/Cars.Application/obj/Debug/net10.0/ref/Cars.Application.dll
