@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "a6293647-97f9-4a44-bed4-72e22b83c3f1",
+		"name": "Studies ASP.NET Core",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "54313996",
+		"_collection_link": "https://kamil-kowalczyk-d729272d-9281902.postman.co/workspace/kamil's-Workspace~5c8d1ff5-c005-479e-8216-c99e323f86c2/collection/54313996-a6293647-97f9-4a44-bed4-72e22b83c3f1?action=share&source=collection_link&creator=54313996"
+	},
+	"item": [
+		{
+			"name": "Cars",
+			"item": [
+				{
+					"name": "GetAllCars",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5085/api/cars/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5085",
+							"path": [
+								"api",
+								"cars",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5085/api/cars/23bf615a-18ae-448e-a859-cdbdbabf5e45",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5085",
+							"path": [
+								"api",
+								"cars",
+								"23bf615a-18ae-448e-a859-cdbdbabf5e45"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostCar",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"brand\": \"Audi\",\n    \"model\": \"A4\",\n    \"doorsNumber\": 5,\n    \"luggageCapacity\": 391,\n    \"engineCapacity\": 999,\n    \"fuelType\": 1,\n    \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n    \"averageFuelConsumption\": 5.8,\n    \"bodyType\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5085/api/cars/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5085",
+							"path": [
+								"api",
+								"cars",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCar",
+					"request": {
+						"method": "DELETE",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateCar",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"brand\": \"Audi\",\n        \"model\": \"A4888888888888888888\",\n        \"doorsNumber\": 3,\n        \"luggageCapacity\": 391,\n        \"engineCapacity\": 999,\n        \"fuelType\": 1,\n        \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n        \"averageFuelConsumption\": 10,\n        \"bodyType\": 0\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5085/api/cars/108b7be6-cfb7-478c-8efc-81c15aef3488",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5085",
+							"path": [
+								"api",
+								"cars",
+								"108b7be6-cfb7-478c-8efc-81c15aef3488"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
