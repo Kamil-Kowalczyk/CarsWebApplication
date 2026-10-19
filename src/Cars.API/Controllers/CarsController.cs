@@ -57,4 +57,50 @@ public class CarsController : BaseApiController
         // Returning the entity directly wraps it in an HTTP 200 OK with the car serialized as JSON:
         return car;
     }
+
+    [HttpPost]
+    public async Task<ActionResult<Car>> CreateCar(Car car)
+    {
+        _context.Set<Car>().Add(car);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetCar), new {id = car.Id}, car);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult> UpdateCar(Guid id, Car car)
+    {
+        Car carFromRepo = await _context.FindAsync<Car>(id);
+
+        if (carFromRepo == null) 
+            return NotFound();
+
+        
+        carFromRepo.Brand = car.Brand;
+        carFromRepo.Model = car.Model;
+        carFromRepo.DoorsNumber = car.DoorsNumber;
+        carFromRepo.LuggageCapacity = car.LuggageCapacity;
+        carFromRepo.EngineCapacity = car.EngineCapacity;
+        carFromRepo.FuelType = car.FuelType;
+        carFromRepo.ProductionDate = car.ProductionDate;
+        carFromRepo.AverageFuelConsumption = car.AverageFuelConsumption;
+        carFromRepo.BodyType = car.BodyType;
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteCar(Guid id)
+    {
+        Car car = await _context.Set<Car>().FindAsync(id);
+
+        if (car == null) 
+            return NotFound();
+
+        _context.Set<Car>().Remove(car);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
 }
