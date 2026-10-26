@@ -16,12 +16,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5085/api/cars/",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/cars/",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "5085",
 							"path": [
 								"api",
 								"cars",
@@ -32,17 +30,15 @@
 					"response": []
 				},
 				{
-					"name": "GetCar",
+					"name": "GetCarById",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5085/api/cars/23bf615a-18ae-448e-a859-cdbdbabf5e45",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/cars/23bf615a-18ae-448e-a859-cdbdbabf5e45",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "5085",
 							"path": [
 								"api",
 								"cars",
@@ -53,13 +49,13 @@
 					"response": []
 				},
 				{
-					"name": "PostCar",
+					"name": "CreateCar",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"brand\": \"Audi\",\n    \"model\": \"A4\",\n    \"doorsNumber\": 5,\n    \"luggageCapacity\": 391,\n    \"engineCapacity\": 999,\n    \"fuelType\": 1,\n    \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n    \"averageFuelConsumption\": 5.8,\n    \"bodyType\": 0\n}",
+							"raw": "{\n    \"brand\": \"Audi\",\n    \"model\": \"A4\",\n    \"doorsNumber\": 5,\n    \"luggageCapacity\": 391,\n    \"engineCapacity\": 1800,\n    \"fuelType\": 1,\n    \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n    \"averageFuelConsumption\": 5.8,\n    \"bodyType\": 0\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -67,12 +63,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5085/api/cars/",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/cars/",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "5085",
 							"path": [
 								"api",
 								"cars",
@@ -86,7 +80,18 @@
 					"name": "DeleteCar",
 					"request": {
 						"method": "DELETE",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/651ad609-6483-4f39-85de-fda865e687ca",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"651ad609-6483-4f39-85de-fda865e687ca"
+							]
+						}
 					},
 					"response": []
 				},
@@ -97,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"brand\": \"Audi\",\n        \"model\": \"A4888888888888888888\",\n        \"doorsNumber\": 3,\n        \"luggageCapacity\": 391,\n        \"engineCapacity\": 999,\n        \"fuelType\": 1,\n        \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n        \"averageFuelConsumption\": 10,\n        \"bodyType\": 0\n    }",
+							"raw": "{\n\"brand\": \"Toyota\",\n\"model\": \"Corolla Hybrid\",\n\"doorsNumber\": 5,\n\"luggageCapacity\": 470,\n\"engineCapacity\": 1800,\n\"fuelType\": 1,\n\"productionDate\": \"2023-04-15T00:00:00Z\",\n\"averageFuelConsumption\": 4.8,\n\"bodyType\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -105,22 +110,27 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5085/api/cars/108b7be6-cfb7-478c-8efc-81c15aef3488",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api/cars/651ad609-6483-4f39-85de-fda865e687ca",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
-							"port": "5085",
 							"path": [
 								"api",
 								"cars",
-								"108b7be6-cfb7-478c-8efc-81c15aef3488"
+								"651ad609-6483-4f39-85de-fda865e687ca"
 							]
 						}
 					},
 					"response": []
 				}
 			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

@@ -1,5 +1,10 @@
 using Cars.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Cars.Application.Cars;
+using Cars.Application.Common.Behaviors;
+using FluentValidation;
+using MediatR;
+using Cars.API.Middleware;
 
 // Entry point using .NET's Minimal Hosting model and top-level statements.
 // WebApplication.CreateBuilder initializes configuration (appsettings.json, environment variables) and the DI container.
@@ -39,12 +44,24 @@ builder.Services.AddCors(options =>
 // registers them with the DI container, and sets up MVC action discovery, model binding, and formatters.
 builder.Services.AddControllers();
 
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(GetCarsList.Handler).Assembly);
+});
+
+builder.Services.AddValidatorsFromAssemblyContaining<Create.CommandValidator>();
+
+builder.Services.AddTransient(
+    typeof(IPipelineBehavior<,>),
+    typeof(ValidationBehavior<,>));
+
 // ==========================================
 // 2. BUILD THE APPLICATION
 // ==========================================
 // Freezes the service collection and builds the WebApplication host.
 var app = builder.Build();
 
+app.UseMiddleware<ApiExceptionMiddleware>();
 // ==========================================
 // 3. CONFIGURE THE HTTP REQUEST PIPELINE (Middleware)
 // Middleware executes sequentially on every incoming HTTP request and outgoing response
