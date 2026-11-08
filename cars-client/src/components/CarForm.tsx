@@ -22,11 +22,11 @@ export const CarForm = ({
     luggageCapacity: initialValues?.luggageCapacity ?? 450,
     engineCapacity: initialValues?.engineCapacity ?? 1600,
     fuelType: initialValues?.fuelType ?? FuelType.Petrol,
-    productionDate: initialValues?.productionDate ?? new Date().toISOString().split('T')[0],
+    productionDate: initialValues?.productionDate?.split('T')[0] ?? new Date().toISOString().split('T')[0],
     averageFuelConsumption: initialValues?.averageFuelConsumption ?? 6.0,
     bodyType: initialValues?.bodyType ?? BodyType.Sedan
   });
-
+  console.log(formData.productionDate)
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
   

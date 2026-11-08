@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router';
 import type { Car, NewCar } from '../models/Car';
 import { getCarById, updateCar } from '../services/carService';
 import CarForm from '../components/CarForm';
+import axios from 'axios';
 
 export const EditCarPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +24,7 @@ export const EditCarPage = () => {
         const fetchedCar = await getCarById(id, controller.signal);
         setCar(fetchedCar);
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === "AbortError") return
+        if (axios.isCancel(err)) return
 
         if (err instanceof Error) {
           setError(err.message);

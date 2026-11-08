@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router';
 import type { Car } from '../models/Car';
 import { FuelTypeLabels, BodyTypeLabels } from '../models/Car';
 import { getCarById, deleteCar } from '../services/carService';
+import axios from "axios";
+import { useCarUiStore } from '../store/useCarUiStore';
 
 export const CarDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +13,22 @@ export const CarDetailsPage = () => {
   const [car, setCar] = useState<Car | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+
+  const removeLiked = useCarUiStore(
+      (state) => state.removeFavorite
+    )
+
+  const isLiked = id ? useCarUiStore(
+      (state) => state.favoriteCarIds.includes(id)
+    ) : false
+
+  const storeHandleLike = useCarUiStore(
+    (state) => state.toggleFavorite
+  )
+
+  const handleLike = (id: string) => {
+    storeHandleLike(id)
+    }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -25,7 +43,7 @@ export const CarDetailsPage = () => {
         const carDetails = await getCarById(id, controller.signal);
         setCar(carDetails);
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === "AbortError") return
+        if (axios.isCancel(err)) return
 
         if (err instanceof Error) {
           setError(err.message);
@@ -54,6 +72,7 @@ export const CarDetailsPage = () => {
     if (confirmed) {
       try {
         await deleteCar(id);
+        removeLiked(id)
         navigate('/cars');
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -86,7 +105,7 @@ export const CarDetailsPage = () => {
       </div>
     );
   }
-
+  
   return (
     <div className="page-container">
       <div className="card details-card">
@@ -150,6 +169,28 @@ export const CarDetailsPage = () => {
         </div>
 
         <div className="details-actions">
+          <button
+                  type="button"
+                  className={`btn-like ${isLiked ? 'liked' : ''}`}
+                  onClick={() => handleLike?.(car.id)}
+                  title={isLiked ? "Unlike" : "Like"}
+                  aria-label="Like"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill={isLiked ? "currentColor" : "none"}
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="heart-icon"
+                  >
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                  </svg>
+                </button>
           <button
             type="button"
             className="btn btn-secondary"

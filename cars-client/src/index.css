@@ -325,6 +325,43 @@ code {
   font-size: 0.85rem;
 }
 
+.btn-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-like:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+.btn-like:active {
+  transform: scale(0.92);
+}
+
+.btn-like.liked,
+.btn-like.active {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.btn-like.liked .heart-icon,
+.btn-like.active .heart-icon {
+  fill: #ef4444;
+}
+
+
 /* Badges */
 .badge {
   display: inline-block;
@@ -355,9 +392,13 @@ code {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
   padding: 1.25rem 1.5rem;
   margin-bottom: 0;
+}
+
+.car-info {
+  width: 100%;
 }
 
 .car-info h3 {
@@ -376,18 +417,82 @@ code {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  /* margin-left: auto; */
 }
 
 /* Search bar */
 .search-bar {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .search-bar input {
   flex: 1;
 }
+
+/* Filter Tabs */
+.filter-tabs {
+  display: inline-flex;
+  align-items: center;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.filter-tab:hover {
+  color: var(--text-h);
+}
+
+.filter-tab.active {
+  background: var(--bg);
+  color: var(--text-h);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.filter-tab .tab-heart-icon {
+  transition: transform 0.2s ease;
+}
+
+.filter-tab:hover .tab-heart-icon {
+  transform: scale(1.15);
+}
+
+.filter-tab .tab-count {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.filter-tab.active .tab-count {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
 
 /* Forms */
 .car-form {

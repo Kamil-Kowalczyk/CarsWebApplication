@@ -1,17 +1,41 @@
 import { useEffect, useState } from 'react';
 import type { Car } from '../models/Car';
-import { FuelTypeLabels, BodyTypeLabels } from '../models/Car';
 import { getCars, deleteCar } from '../services/carService';
 import { useNavigate } from 'react-router';
 import CarItem from '../components/CarItem';
 import SearchBar from '../components/SearchBar';
+import FilterTabs from '../components/FilterTabs';
+
+import axios from 'axios';
+import { useCarUiStore } from '../store/useCarUiStore';
 
 export const CarsPage = () => {
   const navigate = useNavigate();
   const [cars, setCars] = useState<Car[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [filter, setFilter] = useState<string>('')
+  // const [filter, setFilter] = useState<string>('')
+
+  const filter = useCarUiStore(
+    (state) => state.searchTerm
+  )
+  const setFilter = useCarUiStore(
+    (state) => state.setSearchTerm
+  )
+  const showLikedOnly = useCarUiStore(
+    (state) => state.showFavoritesOnly
+  )
+
+  const likedCarIds = useCarUiStore(
+    (state) => state.favoriteCarIds
+  )
+
+  const removeLiked = useCarUiStore(
+    (state) => state.removeFavorite
+  )
+
+  
+  
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -24,7 +48,7 @@ export const CarsPage = () => {
         const fetchedCars = await getCars(abortController.signal);
         setCars(fetchedCars);
       } catch (err: unknown) {
-        if (err instanceof Error && err.name === "AbortError") {
+        if (axios.isCancel(err)) {
             return
         }
 
@@ -56,6 +80,7 @@ export const CarsPage = () => {
       try {
         await deleteCar(id);
         setCars((prev) => prev.filter((car) => car.id !== id));
+        removeLiked(id)
       } catch (err: unknown) {
         if (err instanceof Error) {
           alert(`Failed to delete car: ${err.message}`);
@@ -75,9 +100,12 @@ export const CarsPage = () => {
   };
 
   const filteredCars = cars.filter((car: Car) => {
+    const matchesLiked = !showLikedOnly || likedCarIds.includes(car.id)
     if (car.model.toLowerCase().includes(filter.toLocaleLowerCase()) ||
         car.brand.toLowerCase().includes(filter.toLocaleLowerCase()))
-        return true
+
+        
+        return matchesLiked
     return false
   })
 
@@ -99,7 +127,10 @@ export const CarsPage = () => {
         handleClick={() => setFilter('')}
       />
       
-      
+      <FilterTabs 
+        allCount={cars.length}
+        favoritesCount={likedCarIds.length}
+      />
 
       {isLoading && (
         <div className="loading-container">
@@ -137,6 +168,7 @@ export const CarsPage = () => {
         <div className="car-list">
           {filteredCars.map((car: Car) => (
             <CarItem 
+            key={car.id}
               car={car} 
               handleDelete={handleDelete}
               handleDetails={handleDetails}
