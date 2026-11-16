@@ -1,10 +1,16 @@
-using Cars.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+using System.Text;
+using Cars.API.Middleware;
+using Cars.API.Services;
 using Cars.Application.Cars;
 using Cars.Application.Common.Behaviors;
+using Cars.Domain;
+using Cars.Infrastructure;
 using FluentValidation;
 using MediatR;
-using Cars.API.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 // Entry point using .NET's Minimal Hosting model and top-level statements.
 // WebApplication.CreateBuilder initializes configuration (appsettings.json, environment variables) and the DI container.
@@ -26,6 +32,58 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+
+builder.Services
+    .AddIdentityCore<AppUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+        options.SignIn.RequireConfirmedEmail = true;
+
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwtKey = builder.Configuration["Jwt:Key"]
+            ?? throw new InvalidOperationException("Brak Jwt:Key.");
+
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtKey)),
+
+                ClockSkew = TimeSpan.FromSeconds(30),
+            };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("Smtp"));
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configures CORS (Cross-Origin Resource Sharing):
 // Browsers block web applications on one domain/port from making AJAX calls to another port.
@@ -63,12 +121,13 @@ builder.Services.AddTransient(
 // Freezes the service collection and builds the WebApplication host.
 var app = builder.Build();
 
-app.UseMiddleware<ApiExceptionMiddleware>();
 // ==========================================
 // 3. CONFIGURE THE HTTP REQUEST PIPELINE (Middleware)
 // Middleware executes sequentially on every incoming HTTP request and outgoing response
 // (Conceptually identical to Spring's Servlet Filter Chain). Order matters!
 // ==========================================
+
+app.UseMiddleware<ApiExceptionMiddleware>();
 
 // Configure Swagger UI only in Development mode to avoid exposing API specs in Production:
 if (app.Environment.IsDevelopment())
@@ -87,18 +146,19 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Automatically redirects plain HTTP requests to HTTPS:
-app.UseHttpsRedirection();
-
-// Applies CORS headers to outgoing responses.
-// MUST be placed before UseAuthorization and MapControllers so pre-flight OPTIONS requests succeed!
+// 1. CORS - applies headers to responses (before redirection/auth):
 app.UseCors("CorsPolicy");
 
-// Checks if the user/request satisfies any [Authorize] attributes on the target endpoint:
+// 2. Automatically redirects plain HTTP requests to HTTPS:
+app.UseHttpsRedirection();
+
+// 3. Authentication - identifies WHO the user is (validates the JWT Bearer token):
+app.UseAuthentication();
+
+// 4. Authorization - checks if the identified user has PERMISSION for the endpoint ([Authorize]):
 app.UseAuthorization();
 
-// Connects incoming HTTP request URLs to the corresponding Controller actions
-// using the Endpoint Routing Table generated from [Route] and [HttpGet] attributes:
+// 5. Connects incoming HTTP request URLs to the corresponding Controller actions:
 app.MapControllers();
 
 
@@ -130,6 +190,17 @@ try
 
     // Runs our custom seeder to insert initial cars if the database is currently empty:
     await Seed.SeedData(context);
+
+    
+    var userManager = services.GetRequiredService<
+        UserManager<AppUser>>();
+
+    var roleManager = services.GetRequiredService<
+        RoleManager<IdentityRole>>();
+
+    await IdentitySeed.SeedAsync(
+        userManager,
+        roleManager);
 }
 catch (Exception e)
 {
