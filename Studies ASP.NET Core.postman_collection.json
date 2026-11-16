@@ -4,7 +4,7 @@
 		"name": "Studies ASP.NET Core",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "54313996",
-		"_collection_link": "https://kamil-kowalczyk-d729272d-9281902.postman.co/workspace/kamil's-Workspace~5c8d1ff5-c005-479e-8216-c99e323f86c2/collection/54313996-a6293647-97f9-4a44-bed4-72e22b83c3f1?action=share&source=collection_link&creator=54313996"
+		"_collection_link": "https://kamil-kowalczyk-d729272d-9281902.postman.co/workspace/5c8d1ff5-c005-479e-8216-c99e323f86c2/collection/54313996-a6293647-97f9-4a44-bed4-72e22b83c3f1?action=share&source=collection_link&creator=54313996"
 	},
 	"item": [
 		{
@@ -14,7 +14,13 @@
 					"name": "GetAllCars",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/cars/",
 							"host": [
@@ -35,14 +41,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/cars/23bf615a-18ae-448e-a859-cdbdbabf5e45",
+							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"cars",
-								"23bf615a-18ae-448e-a859-cdbdbabf5e45"
+								"8e151692-ebc5-4e08-a227-36478b8f742d"
 							]
 						}
 					},
@@ -52,7 +58,13 @@
 					"name": "CreateCar",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"brand\": \"Audi\",\n    \"model\": \"A4\",\n    \"doorsNumber\": 5,\n    \"luggageCapacity\": 391,\n    \"engineCapacity\": 1800,\n    \"fuelType\": 1,\n    \"productionDate\": \"2022-10-18T19:11:15.7084665\",\n    \"averageFuelConsumption\": 5.8,\n    \"bodyType\": 0\n}",
@@ -77,19 +89,53 @@
 					"response": []
 				},
 				{
-					"name": "DeleteCar",
+					"name": "CreateCar - Validation Error",
 					"request": {
-						"method": "DELETE",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"brand\": \"\",\n\"model\": \"\",\n\"doorsNumber\": 1,\n\"luggageCapacity\": -10,\n\"engineCapacity\": 0,\n\"fuelType\": 1,\n\"productionDate\": \"2035-01-01T00:00:00Z\",\n\"averageFuelConsumption\": -4.5,\n\"bodyType\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{baseUrl}}/api/cars/651ad609-6483-4f39-85de-fda865e687ca",
+							"raw": "{{baseUrl}}/api/cars/",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"cars",
-								"651ad609-6483-4f39-85de-fda865e687ca"
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteCar",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/525c2f91-24a6-42f4-ac6b-c625a7cc48a7",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"525c2f91-24a6-42f4-ac6b-c625a7cc48a7"
 							]
 						}
 					},
@@ -110,14 +156,220 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/cars/651ad609-6483-4f39-85de-fda865e687ca",
+							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"cars",
-								"651ad609-6483-4f39-85de-fda865e687ca"
+								"8e151692-ebc5-4e08-a227-36478b8f742d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"userName\": \"student1\",\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Email",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/confirm-email?userId=801f92a9-67d2-4f21-a942-86f4cb28ebf2&token=Q2ZESjhDRTZMeHpGTzdKR25KYWRabUdxd0VkWTdDbDZoNHg1aUsxSExVSGFNQnZaV09oRWNwYmN2UGlNaWtJZVJNTWdjc1hmdkp6elZjSjVDdzgrVGMrWGRncnBqQkpHZXpVTFpwa1JjL1hEc0xJRFMwYUNGNklZSE1Fc20wczdHTGlBMngrcXdPSnVkZVFYa2UwbnNzVXZJbEg4NFZ6U3BWVzlQL1hXSHE5ckN0VHVQODNSVStmTThJenNObTA2NXR6cDQwNFBkeGxNS3lEM0xnUkpjSEhOWjhmSVQwQjZDa09NRFVSMkZ6Mm9BeVY5MncwRExNWjdGRGJJRFdaREJLeDczQT09",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"confirm-email"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "801f92a9-67d2-4f21-a942-86f4cb28ebf2"
+								},
+								{
+									"key": "token",
+									"value": "Q2ZESjhDRTZMeHpGTzdKR25KYWRabUdxd0VkWTdDbDZoNHg1aUsxSExVSGFNQnZaV09oRWNwYmN2UGlNaWtJZVJNTWdjc1hmdkp6elZjSjVDdzgrVGMrWGRncnBqQkpHZXpVTFpwa1JjL1hEc0xJRFMwYUNGNklZSE1Fc20wczdHTGlBMngrcXdPSnVkZVFYa2UwbnNzVXZJbEg4NFZ6U3BWVzlQL1hXSHE5ckN0VHVQODNSVStmTThJenNObTA2NXR6cDQwNFBkeGxNS3lEM0xnUkpjSEhOWjhmSVQwQjZDa09NRFVSMkZ6Mm9BeVY5MncwRExNWjdGRGJJRFdaREJLeDczQT09"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AdminLogin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"admin@cars.local\",\n\"password\": \"Admin123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AdminDeleteCar",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/8dfc7aa7-e301-40ae-982a-e307e753e991",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"8dfc7aa7-e301-40ae-982a-e307e753e991"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ForgotPassword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"student1@test.pl\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/forgot-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResetPassword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"student1@test.pl\",\n\"token\": \"Q2ZESjhDRTZMeHpGTzdKR25KYWRabUdxd0VmN0hZd3JMV3VjVWFpd3pMeXN4eVpVeVZ2MUVsMmdsRURHSGxDbGhVQSt0ZEZiTGRoYmFzY1BERnYwWHM5RVVBWUNaTVpSTWVQVm5jVkRwN2ZOa2pwZTJIaUwvZG5pWi9iQ0lmNFo5S3BKYktGTW5rR3pBUjk4cjF0SjdJNzJsc3dJWFhJNGxtTjdvVTdITHdGaUp2N2g3STQzazJuWWhKOTVmb0phMG5xaGZDTm01YmlHREF5eE92emZaZnBScHdtdmhPVXhNOWpSSTlQeVRnK0F6NjMr\",\n\"newPassword\": \"NoweHaslo123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/account/reset-password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"account",
+								"reset-password"
 							]
 						}
 					},
@@ -126,11 +378,46 @@
 			]
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "",
-			"type": "default"
+			"value": ""
+		},
+		{
+			"key": "userToken",
+			"value": ""
+		},
+		{
+			"key": "adminToken",
+			"value": ""
+		},
+		{
+			"key": "carId",
+			"value": ""
 		}
 	]
 }
