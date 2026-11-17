@@ -228,7 +228,7 @@ export const CarDetailsPage = () => {
           >
             Edit
           </button>
-          {!isAdmin && <button
+          {isAdmin && <button
             type="button"
             className="btn btn-danger"
             onClick={handleDelete}
