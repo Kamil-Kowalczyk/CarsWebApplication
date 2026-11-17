@@ -1,4 +1,5 @@
 import { BodyTypeLabels, FuelTypeLabels, type Car } from "../models/Car"
+import { useAuthStore } from "../store/useAuthStore"
 import { useCarUiStore } from "../store/useCarUiStore"
 
 export interface CarItemProps {
@@ -14,16 +15,36 @@ export const CarItem = ({
     handleEdit,
     handleDelete,
 }: CarItemProps) => {
-    const isLiked = useCarUiStore(
-      (state) => state.favoriteCarIds.includes(car.id)
+    const user = useAuthStore(
+      (state) => state.user
     )
+
+    const isAdmin =
+      user?.roles.includes('Admin')
+      ?? false;
+
+    const favoriteCarIdsByUser =
+      useCarUiStore(
+        (state) =>
+          state.favoriteCarIdsByUser,
+      );
+
+// 2. Dopiero zwykły kod JS wybiera tablicę użytkownika.
+    const favoriteCarIds =
+      user
+        ? favoriteCarIdsByUser[user.id] ?? []
+        : [];
+
+    const isLiked = favoriteCarIds.includes(car.id)
 
     const storeHandleLike = useCarUiStore(
       (state) => state.toggleFavorite
     )
 
-    const handleLike = (id: string) => {
-      storeHandleLike(id)
+    const handleLike = (carId: string) => {
+      if (user) {
+        storeHandleLike(user.id, carId)
+      }
     }
 
     return (
@@ -80,13 +101,13 @@ export const CarItem = ({
                 >
                   Edit
                 </button>
-                <button
+                {isAdmin && <button
                   type="button"
                   className="btn btn-danger btn-sm"
                   onClick={() => handleDelete(car.id)}
                 >
                   Delete
-                </button>
+                </button>}
               </div>
             </div>
     )

@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useCarUiStore } from '../store/useCarUiStore';
+
 
 export interface FilterTabsProps {
   allCount: number;
@@ -20,8 +20,9 @@ export const FilterTabs = ({
     )
 
   const handleSelect = (tab: 'all' | 'favorites') => {
-    tab === 'all' ? setShowLikedOnly(false) : setShowLikedOnly(true)
+    setShowLikedOnly(tab === 'favorites');
   };
+
 
   return (
     <div className="filter-tabs" role="tablist" aria-label="Filter cars">

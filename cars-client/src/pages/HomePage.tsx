@@ -1,6 +1,9 @@
 import { Link } from 'react-router';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const HomePage = () => {
+  const user = useAuthStore((state) => state.user)
+
   return (
     <div className="page-container home-page">
       <div className="card hero-card">
@@ -10,12 +13,14 @@ export const HomePage = () => {
           your car fleet.
         </p>
         <div className="hero-buttons">
-          <Link to="/cars" className="btn btn-primary">
+          {user && <Link to="/cars" className="btn btn-primary">
             Browse Cars Fleet
-          </Link>
-          <Link to="/cars/new" className="btn btn-secondary">
+          </Link>}
+          {user && <Link to="/cars/new" className="btn btn-secondary">
             + Add New Car
-          </Link>
+          </Link>}
+          {!user && <Link to="/login" className="btn btn-primary">Already have an account?</Link>}
+          {!user && <Link to="/register" className="btn btn-secondary">Want to register?</Link>}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { FuelTypeLabels, BodyTypeLabels } from '../models/Car';
 import { getCarById, deleteCar } from '../services/carService';
 import axios from "axios";
 import { useCarUiStore } from '../store/useCarUiStore';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const CarDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,21 +15,41 @@ export const CarDetailsPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  const removeLiked = useCarUiStore(
-      (state) => state.removeFavorite
-    )
+  const user = useAuthStore(
+        (state) => state.user
+      )
+  
+  const isAdmin =
+    user?.roles.includes('Admin')
+    ?? false;
 
-  const isLiked = id ? useCarUiStore(
-      (state) => state.favoriteCarIds.includes(id)
-    ) : false
+  const favoriteCarIdsByUser =
+    useCarUiStore(
+      (state) =>
+        state.favoriteCarIdsByUser,
+    );
+
+  const favoriteCarIds =
+    user
+      ? favoriteCarIdsByUser[user.id] ?? []
+      : [];
+
+  const isLiked = car ? favoriteCarIds.includes(car.id) : false
 
   const storeHandleLike = useCarUiStore(
     (state) => state.toggleFavorite
   )
 
-  const handleLike = (id: string) => {
-    storeHandleLike(id)
+  const handleLike = (carId: string) => {
+    if (user) {
+      storeHandleLike(user.id, carId)
     }
+  }
+
+  const removeLiked = useCarUiStore(
+      (state) => state.removeFavorite
+    )
+
 
   useEffect(() => {
     const controller = new AbortController()
@@ -72,7 +93,9 @@ export const CarDetailsPage = () => {
     if (confirmed) {
       try {
         await deleteCar(id);
-        removeLiked(id)
+        if (user) {
+          removeLiked(user.id, id)
+        }
         navigate('/cars');
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -205,13 +228,14 @@ export const CarDetailsPage = () => {
           >
             Edit
           </button>
-          <button
+          {!isAdmin && <button
             type="button"
             className="btn btn-danger"
             onClick={handleDelete}
           >
             Delete
-          </button>
+          </button>}
+          
         </div>
       </div>
     </div>

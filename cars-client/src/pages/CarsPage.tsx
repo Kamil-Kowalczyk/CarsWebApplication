@@ -8,6 +8,7 @@ import FilterTabs from '../components/FilterTabs';
 
 import axios from 'axios';
 import { useCarUiStore } from '../store/useCarUiStore';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const CarsPage = () => {
   const navigate = useNavigate();
@@ -15,6 +16,25 @@ export const CarsPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   // const [filter, setFilter] = useState<string>('')
+
+
+  const user = useAuthStore(
+        (state) => state.user
+      )
+  
+  
+  const favoriteCarIdsByUser =
+    useCarUiStore(
+      (state) =>
+        state.favoriteCarIdsByUser,
+    );
+
+  const favoriteCarIds =
+    user
+      ? favoriteCarIdsByUser[user.id] ?? []
+      : [];
+  
+
 
   const filter = useCarUiStore(
     (state) => state.searchTerm
@@ -26,9 +46,7 @@ export const CarsPage = () => {
     (state) => state.showFavoritesOnly
   )
 
-  const likedCarIds = useCarUiStore(
-    (state) => state.favoriteCarIds
-  )
+  const likedCarIds = favoriteCarIds
 
   const removeLiked = useCarUiStore(
     (state) => state.removeFavorite
@@ -80,7 +98,7 @@ export const CarsPage = () => {
       try {
         await deleteCar(id);
         setCars((prev) => prev.filter((car) => car.id !== id));
-        removeLiked(id)
+        if (user) removeLiked(user.id, id)
       } catch (err: unknown) {
         if (err instanceof Error) {
           alert(`Failed to delete car: ${err.message}`);
