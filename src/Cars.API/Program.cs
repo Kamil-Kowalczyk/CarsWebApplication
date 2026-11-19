@@ -152,18 +152,17 @@ app.UseCors("CorsPolicy");
 // 2. Automatically redirects plain HTTP requests to HTTPS:
 app.UseHttpsRedirection();
 
-// 3. Authentication - identifies WHO the user is (validates the JWT Bearer token):
-app.UseAuthentication();
-
-// 4. Authorization - checks if the identified user has PERMISSION for the endpoint ([Authorize]):
-app.UseAuthorization();
-
-// 5. Connects incoming HTTP request URLs to the corresponding Controller actions:
-app.MapControllers();
-
+// 3. Serves static files (e.g. uploaded images from wwwroot) without requiring authentication:
 app.UseStaticFiles();
 
-app.UseRouting();
+// 4. Authentication - identifies WHO the user is (validates the JWT Bearer token):
+app.UseAuthentication();
+
+// 5. Authorization - checks if the identified user has PERMISSION for the endpoint ([Authorize]):
+app.UseAuthorization();
+
+// 6. Connects incoming HTTP request URLs to the corresponding Controller actions:
+app.MapControllers();
 
 
 // ==========================================

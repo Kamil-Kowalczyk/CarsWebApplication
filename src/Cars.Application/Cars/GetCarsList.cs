@@ -27,6 +27,8 @@ public class GetCarsList
             CancellationToken cancellationToken)
         {
             return await _context.Cars.AsNoTracking()
+                .Include(x => x.Photos)
+                .Include(x => x.Features)
                 .Select(car => CarMapper.ToDto(car))
                 .ToListAsync(cancellationToken);
         }

@@ -29,6 +29,8 @@ public class Details
         {
             var car = await _context.Cars
                 .AsNoTracking()
+                .Include(x => x.Photos)
+                .Include(x => x.Features)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (car == null)
