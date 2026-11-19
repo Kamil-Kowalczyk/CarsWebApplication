@@ -4,7 +4,7 @@
 		"name": "Studies ASP.NET Core",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "54313996",
-		"_collection_link": "https://kamil-kowalczyk-d729272d-9281902.postman.co/workspace/5c8d1ff5-c005-479e-8216-c99e323f86c2/collection/54313996-a6293647-97f9-4a44-bed4-72e22b83c3f1?action=share&source=collection_link&creator=54313996"
+		"_collection_link": "https://kamil-kowalczyk-d729272d-9281902.postman.co/workspace/kamil's-Workspace~5c8d1ff5-c005-479e-8216-c99e323f86c2/collection/54313996-a6293647-97f9-4a44-bed4-72e22b83c3f1?action=share&source=collection_link&creator=54313996"
 	},
 	"item": [
 		{
@@ -39,7 +39,13 @@
 					"name": "GetCarById",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d",
 							"host": [
@@ -170,13 +176,147 @@
 					"response": []
 				},
 				{
+					"name": "GetFeatures",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/features",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"features"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddCarFeatures",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"featureIds\": [\n\"95b0c7f1-784d-4fed-b9ed-2b91d8d0a0f7\",\n\"7df4b509-1537-494c-b7b2-052e98743893\",\n\"49764180-2a22-4815-8421-8196b362ae9d\"\n]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d/features",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"8e151692-ebc5-4e08-a227-36478b8f742d",
+								"features"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddCarPhoto",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{userToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/kamil/Downloads/toyota.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d/photos",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"8e151692-ebc5-4e08-a227-36478b8f742d",
+								"photos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AdminDeleteCarPhoto",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/cars/8e151692-ebc5-4e08-a227-36478b8f742d/photos/a229305b-e2e1-4316-965a-9c9006d9ed50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cars",
+								"8e151692-ebc5-4e08-a227-36478b8f742d",
+								"photos",
+								"a229305b-e2e1-4316-965a-9c9006d9ed50"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Register",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"userName\": \"student1\",\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"raw": "{\n\"userName\": \"student2\",\n\"email\": \"student2@test.pl\",\n\"password\": \"Student123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -204,7 +344,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\"email\": \"student1@test.pl\",\n\"password\": \"Student123\"\n}",
+							"raw": "{\n\"email\": \"student1@test.pl\",\n\"password\": \"NoweHaslo123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
