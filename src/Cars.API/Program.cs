@@ -161,6 +161,10 @@ app.UseAuthorization();
 // 5. Connects incoming HTTP request URLs to the corresponding Controller actions:
 app.MapControllers();
 
+app.UseStaticFiles();
+
+app.UseRouting();
+
 
 // ==========================================
 // 4. DATABASE MIGRATION & SEEDING AT STARTUP
@@ -188,10 +192,13 @@ try
     // - If all migrations were already applied previously, it does nothing (safe to run on every startup).
     await context.Database.MigrateAsync();
 
-    // Runs our custom seeder to insert initial cars if the database is currently empty:
+    // Dane samochodów.
     await Seed.SeedData(context);
 
-    
+    // Dane wyposażenia.
+    await FeatureSeed.SeedAsync(context);
+
+    // Role i konto administratora.
     var userManager = services.GetRequiredService<
         UserManager<AppUser>>();
 
