@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import type { Car, NewCar } from '../models/Car';
 import { getCarById, updateCar } from '../services/carService';
 import CarForm from '../components/CarForm';
-import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../queries/queryKey';
 import type { CarFormValues } from '../models/CarFormValues';

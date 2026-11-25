@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useForm } from 'react-hook-form';
 import { getFeatures } from '../services/carService';
 import { queryKeys } from '../queries/queryKey';
-import { useEffect } from 'react';
+
 
 interface CarFormProps {
   initialValues?: Car;
@@ -37,7 +37,6 @@ export const CarForm = ({
     register,
     handleSubmit,
     formState: { errors },
-    reset
   } = useForm<CarFormValues>({
     defaultValues: {
       brand: initialValues?.brand ?? '',

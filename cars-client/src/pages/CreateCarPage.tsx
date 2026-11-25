@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router';
 import type { CarFormValues } from '../models/CarFormValues';
-import { FuelType, BodyType } from '../models/Car';
-import { createCar, getFeatures } from '../services/carService';
+import { createCar } from '../services/carService';
 import CarForm from '../components/CarForm';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../queries/queryKey';
 
 export const CreateCarPage = () => {

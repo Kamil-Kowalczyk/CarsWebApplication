@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import type { Car } from '../models/Car';
 import { getCars, deleteCar } from '../services/carService';
 import { useNavigate } from 'react-router';
@@ -6,7 +5,6 @@ import CarItem from '../components/CarItem';
 import SearchBar from '../components/SearchBar';
 import FilterTabs from '../components/FilterTabs';
 
-import axios from 'axios';
 import { useCarUiStore } from '../store/useCarUiStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
