@@ -8,19 +8,6 @@ import { queryKeys } from '../queries/queryKey';
 
 export const CreateCarPage = () => {
   const navigate = useNavigate();
-
-  const initialValues: CarFormValues = {
-    brand: '',
-    model: '',
-    doorsNumber: 5,
-    luggageCapacity: 450,
-    engineCapacity: 1600,
-    fuelType: FuelType.Petrol,
-    productionDate: new Date().toISOString().split('T')[0],
-    averageFuelConsumption: 6.0,
-    bodyType: BodyType.Sedan,
-    featureIds: []
-  };
    const queryClient = useQueryClient();
   
 
@@ -43,7 +30,7 @@ export const CreateCarPage = () => {
 
 
 
-  const handleCreate = async (carData: CarFormValues) => {
+  const handleCreate = (carData: CarFormValues) => {
     createMutation.mutate(carData)
   };
 
@@ -56,7 +43,6 @@ export const CreateCarPage = () => {
         </p>
         {createMutation.isError && <div className="alert alert-error">{createMutation.error.message}</div>}
         <CarForm
-          initialValues={initialValues}
           onSubmit={handleCreate}
           submitButtonText="Create Car"
           isSubmitting={createMutation.isPending}

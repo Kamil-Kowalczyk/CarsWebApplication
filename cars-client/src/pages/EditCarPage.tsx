@@ -4,53 +4,72 @@ import type { Car, NewCar } from '../models/Car';
 import { getCarById, updateCar } from '../services/carService';
 import CarForm from '../components/CarForm';
 import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../queries/queryKey';
+import type { CarFormValues } from '../models/CarFormValues';
 
 export const EditCarPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [car, setCar] = useState<Car | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const controller = new AbortController()
+  const carId = id ?? ""
 
-    const fetchCar = async () => {
-      if (!id) return;
-      setIsLoading(true);
-      setError('');
-      try {
-        const fetchedCar = await getCarById(id, controller.signal);
-        setCar(fetchedCar);
-      } catch (err: unknown) {
-        if (axios.isCancel(err)) return
 
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Failed to load car details for editing.');
-        }
-      } finally {
-        if (controller.signal.aborted) return
-        setIsLoading(false);
-      }
-    };
+  const {
+    data: car,
+    isPending: isCarPending,
+    isError: isCarError,
+    error: carError,
+  } = useQuery({
+    // Każdy samochód ma osobny wpis w cache:
+    //
+    // ['car', 'guid-samochodu']
+    queryKey: queryKeys.car(carId),
+    // TanStack Query przekazuje AbortSignal.
+    // Nie musimy tworzyć własnego AbortController.
+    queryFn: ({ signal }) => getCarById(carId, signal),
+    // Jeśli id nie istnieje,
+    // zapytanie nie powinno zostać uruchomione.
+    enabled: Boolean(id),
+  });
 
-    fetchCar();
+  const updateMutation = useMutation({
+    // mutationFn mówi:
+    //
+    // "jak wykonać operację zmieniającą dane".
+    mutationFn: (values: CarFormValues) => updateCar(carId, values),
+    // Ta funkcja wykona się,
+    // jeśli PUT zakończy się sukcesem.
+    onSuccess: async () => {
+    // Lista samochodów może zawierać
+    // stare dane.
+      await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.cars }),
+      queryClient.invalidateQueries({ queryKey: queryKeys.car(carId) }),
+    ]);
+      // Po zapisaniu wracamy
+      // do szczegółów samochodu.
+      navigate(`/cars/${carId}`);
+    },
+  });
+  // =========================================================
+  // SUBMIT FORMULARZA
+  // =========================================================
+  function onSubmit(values: CarFormValues) {
+    // Nie robimy już ręcznie:
+    //
+    // event.preventDefault()
+    // try/catch
+    // setIsSubmitting(...)
+    //
+    // handleSubmit i useMutation
+    // przejmują te obowiązki.
+    updateMutation.mutate(values);
+  }
 
-    return () => {
-      controller.abort()
-    }
-  }, [id]);
-
-  const handleUpdate = async (carData: NewCar) => {
-    if (!id) return;
-    await updateCar(id, carData);
-    navigate(`/cars/${id}`);
-  };
-
-  if (isLoading) {
+  if (isCarPending) {
     return (
       <div className="page-container">
         <p className="loading-text">Loading car data for editing...</p>
@@ -58,12 +77,12 @@ export const EditCarPage = () => {
     );
   }
 
-  if (error || !car) {
+  if (isCarError || !car) {
     return (
       <div className="page-container">
         <div className="alert alert-error">
           <h3>Error</h3>
-          <p>{error || 'Car not found.'}</p>
+          <p>{carError.message || 'Car not found.'}</p>
         </div>
         <Link to="/cars" className="btn btn-secondary">
           Back to Cars List
@@ -82,10 +101,13 @@ export const EditCarPage = () => {
           Update the fields below and submit to save changes.
         </p>
         <CarForm
-          key={car.id}
-          initialValues={car}
-          onSubmit={handleUpdate}
+          initialValues={{
+            ...car
+            
+          }}
+          onSubmit={onSubmit}
           submitButtonText="Save Changes"
+          isSubmitting={updateMutation.isPending}
           onCancel={() => navigate(`/cars/${car.id}`)}
         />
       </div>

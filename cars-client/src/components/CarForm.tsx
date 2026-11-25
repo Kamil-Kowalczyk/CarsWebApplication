@@ -1,14 +1,14 @@
-import { useState } from 'react';
 import type { CarFormValues } from '../models/CarFormValues';
-import { FuelType, BodyType, FuelTypeLabels, BodyTypeLabels } from '../models/Car';
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { FormState, useForm } from 'react-hook-form';
+import { FuelType, BodyType, FuelTypeLabels, BodyTypeLabels, type Car } from '../models/Car';
+import { useQuery } from "@tanstack/react-query"
+import { useForm } from 'react-hook-form';
 import { getFeatures } from '../services/carService';
 import { queryKeys } from '../queries/queryKey';
+import { useEffect } from 'react';
 
 interface CarFormProps {
-  initialValues?: Partial<CarFormValues>;
-  onSubmit: (car: CarFormValues) => Promise<void>;
+  initialValues?: Car;
+  onSubmit: (car: CarFormValues) => void;
   submitButtonText?: string;
   isSubmitting?: boolean;
   onCancel?: () => void;
@@ -21,7 +21,6 @@ export const CarForm = ({
   isSubmitting = false,
   onCancel
 }: CarFormProps) => {
-  const queryClient = useQueryClient();
   // =========================================================
   // TANSTACK QUERY -- FEATURES
   // =========================================================
@@ -38,6 +37,7 @@ export const CarForm = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm<CarFormValues>({
     defaultValues: {
       brand: initialValues?.brand ?? '',
@@ -49,9 +49,11 @@ export const CarForm = ({
       productionDate: initialValues?.productionDate?.split('T')[0] ?? new Date().toISOString().split('T')[0],
       averageFuelConsumption: initialValues?.averageFuelConsumption ?? 6.0,
       bodyType: initialValues?.bodyType ?? BodyType.Sedan,
-      featureIds: initialValues?.featureIds ?? []
+      featureIds: initialValues?.features.map((v) => v.id) ?? []
     },
   });
+
+  console.log(initialValues)
 
 
   // =========================================================
@@ -74,16 +76,14 @@ export const CarForm = ({
             placeholder="e.g. Toyota"
             {...register("brand", {
               required: "Brand is required",
-
               minLength: {
                 value: 2,
-
-                message: "Brand has to have at least 2 characters"
+                message: "Brand must have at least 2 characters"
               }
             })}
           />
           {errors.brand && (
-            <p>{errors.brand.message}</p>
+            <p className="form-error">{errors.brand.message}</p>
           )}
         </div>
 
@@ -91,52 +91,85 @@ export const CarForm = ({
           <label htmlFor="model">Model *</label>
           <input
             id="model"
-            name="model"
             type="text"
-            required
             placeholder="e.g. Corolla"
+            {...register("model", {
+              required: "Model is required"
+            })}
           />
+          {errors.model && (
+            <p className="form-error">{errors.model.message}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label htmlFor="doorsNumber">Doors Number *</label>
           <input
             id="doorsNumber"
-            name="doorsNumber"
             type="number"
-            min={1}
-            max={10}
-            required
+            {...register("doorsNumber", {
+              valueAsNumber: true,
+              required: "Please enter the number of doors",
+              min: {
+                value: 2,
+                message: "Minimum 2 doors"
+              },
+              max: {
+                value: 5,
+                message: "Maximum 5 doors"
+              }
+            })}
           />
+          {errors.doorsNumber && (
+            <p className="form-error">{errors.doorsNumber.message}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label htmlFor="luggageCapacity">Luggage Capacity (L) *</label>
           <input
             id="luggageCapacity"
-            name="luggageCapacity"
             type="number"
-            min={0}
-            required
+            {...register("luggageCapacity", {
+              valueAsNumber: true,
+              required: "Please enter luggage capacity",
+              min: {
+                value: 0,
+                message: "Value cannot be negative"
+              }
+            })}
           />
+          {errors.luggageCapacity && (
+            <p className="form-error">{errors.luggageCapacity.message}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label htmlFor="engineCapacity">Engine Capacity (cm³) *</label>
           <input
             id="engineCapacity"
-            name="engineCapacity"
             type="number"
-            min={0}
-            required
+            {...register("engineCapacity", {
+              valueAsNumber: true,
+              required: "Please enter engine capacity",
+              min: {
+                value: 1,
+                message: "Value must be positive"
+              }
+            })}
           />
+          {errors.engineCapacity && (
+            <p className="form-error">{errors.engineCapacity.message}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label htmlFor="fuelType">Fuel Type *</label>
           <select
             id="fuelType"
-            name="fuelType"
+            {...register("fuelType", {
+              valueAsNumber: true
+            })}
           >
             {Object.entries(FuelTypeLabels).map(([val, label]) => (
               <option key={val} value={val}>
@@ -150,10 +183,14 @@ export const CarForm = ({
           <label htmlFor="productionDate">Production Date *</label>
           <input
             id="productionDate"
-            name="productionDate"
             type="date"
-            required
+            {...register("productionDate", {
+              required: "Please enter production date"
+            })}
           />
+          {errors.productionDate && (
+            <p className="form-error">{errors.productionDate.message}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -162,19 +199,29 @@ export const CarForm = ({
           </label>
           <input
             id="averageFuelConsumption"
-            name="averageFuelConsumption"
             type="number"
             step="0.1"
-            min={0}
-            required
+            {...register("averageFuelConsumption", {
+              valueAsNumber: true,
+              required: "Please enter average fuel consumption",
+              min: {
+                value: 0.1,
+                message: "Value must be positive"
+              }
+            })}
           />
+          {errors.averageFuelConsumption && (
+            <p className="form-error">{errors.averageFuelConsumption.message}</p>
+          )}
         </div>
 
         <div className="form-group">
           <label htmlFor="bodyType">Body Type *</label>
           <select
             id="bodyType"
-            name="bodyType"
+            {...register("bodyType", {
+              valueAsNumber: true
+            })}
           >
             {Object.entries(BodyTypeLabels).map(([val, label]) => (
               <option key={val} value={val}>
@@ -184,27 +231,27 @@ export const CarForm = ({
           </select>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="bodyType">Equipment *</label>
-            {featuresPending ? (
-                <p>Loading Equipment...</p>
-              ) : (
-                <div className="">
-                  {features.map((feature) => (
-                    <div className="" key={feature.id}>
-                      <label className="">
-                        <input
-                          className=""
-                          type="checkbox"
-                          value={feature.id}
-                          {...register("featureIds")}
-                        />
-                        <span className="">{feature.name}</span>
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              )}
+        <div className="form-group form-group-full">
+          <label>Equipment</label>
+          {featuresPending ? (
+            <p className="loading-text">Loading equipment...</p>
+          ) : (
+            <div className="features-grid">
+              {features.map((feature) => {
+               return (
+                <label className="feature-checkbox" key={feature.id}>
+                  <input
+                    type="checkbox"
+                    value={feature.id}
+                    // checked={initialValues?.featureIds?.some((v) => v == feature.id) ?? false }
+                    {...register("featureIds")}
+                  />
+                
+                  <span>{feature.name}</span>
+                </label>
+              )})}
+            </div>
+          )}
         </div>
       </div>
 
