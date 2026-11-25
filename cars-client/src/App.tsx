@@ -14,6 +14,7 @@ import RegisterPage from './pages/RegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import AboutPage from './pages/AboutPage';
 
+
 export default function App() {
   return (
     <Routes>

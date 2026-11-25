@@ -9,13 +9,61 @@ import FilterTabs from '../components/FilterTabs';
 import axios from 'axios';
 import { useCarUiStore } from '../store/useCarUiStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../queries/queryKey';
 
 export const CarsPage = () => {
   const navigate = useNavigate();
-  const [cars, setCars] = useState<Car[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  // const [filter, setFilter] = useState<string>('')
+
+const queryClient = useQueryClient();
+
+// Pobranie listy samochodów.
+//
+// TanStack Query przejmuje odpowiedzialność za:
+// - dane,
+// - stan oczekiwania,
+// - stan błędu,
+// - cache.
+const {
+  data: cars = [],
+  isLoading,
+  isError,
+  error,
+} = useQuery({
+  queryKey: queryKeys.cars,
+  // TanStack Query przekazuje AbortSignal.
+  // Jeżeli zapytanie przestanie być potrzebne,
+  // może zostać anulowane.
+  queryFn: ({ signal }) => getCars(signal),
+});
+
+
+// =========================================================
+// MUTACJA -- USUWANIE SAMOCHODU
+// =========================================================
+const deleteMutation = useMutation({
+  // Funkcja wykonująca DELETE do API.
+  mutationFn: deleteCar,
+  // onSuccess uruchamia się,
+  // gdy DELETE zakończy się powodzeniem.
+  onSuccess: (_data, deletedCarId) => {
+    // Usuwamy samochód również
+    // z ulubionych aktualnego użytkownika.
+    if (user) {
+      removeLiked(user.id, deletedCarId);
+    }
+
+    // Lista samochodów w cache może być
+    // już nieaktualna.
+    //
+    // Oznaczamy ją jako nieaktualną.
+    // Jeśli query jest aktywne,
+    // TanStack Query pobierze dane ponownie.
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.cars,
+    });
+  },
+});
 
 
   const user = useAuthStore(
@@ -53,59 +101,14 @@ export const CarsPage = () => {
   )
 
   
-  
 
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    const fetchCars = async () => {
-      setIsLoading(true);
-      setError('');
-      
-      try {
-        const fetchedCars = await getCars(abortController.signal);
-        setCars(fetchedCars);
-      } catch (err: unknown) {
-        if (axios.isCancel(err)) {
-            return
-        }
-
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError('Unexpected error!');
-        }
-      } finally {
-        if (!abortController.signal.aborted) {
-            setIsLoading(false);
-        }
-      }
-    };
-
-    fetchCars();
-
-    return () => {
-        abortController.abort()
-    }
-  }, []);
-
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string) => {
     const confirmed = window.confirm(
       'Are you sure you want to delete this car?'
     );
 
     if (confirmed) {
-      try {
-        await deleteCar(id);
-        setCars((prev) => prev.filter((car) => car.id !== id));
-        if (user) removeLiked(user.id, id)
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          alert(`Failed to delete car: ${err.message}`);
-        } else {
-          alert('Failed to delete car.');
-        }
-      }
+      deleteMutation.mutate(id)
     }
   };
 
@@ -156,14 +159,21 @@ export const CarsPage = () => {
         </div>
       )}
 
-      {!isLoading && error.length !== 0 && (
+      {!isLoading && isError && (
         <div className="alert alert-error">
           <h3>Server has run into some problems</h3>
-          <p>{error}</p>
+          <p>{error.message}</p>
         </div>
       )}
 
-      {!isLoading && error.length === 0 && cars.length === 0 && (
+      {!isLoading && deleteMutation.isError && (
+        <div className="alert alert-error">
+          <h3>Server has run into some problems</h3>
+          <p>{deleteMutation.error.message}</p>
+        </div>
+      )}
+
+      {!isLoading && !isError && cars.length === 0 && (
         <div className="empty-state">
           <p>Oops, there are no cars...</p>
           <button
@@ -176,13 +186,13 @@ export const CarsPage = () => {
         </div>
       )}
     
-      {!isLoading && error.length === 0 && filteredCars.length === 0 && cars.length > 0 && (
+      {!isLoading && !isError && filteredCars.length === 0 && cars.length > 0 && (
         <div className="empty-state">
             <p>No cars match &quot;{filter}&quot;.</p>
           </div>
       )}
 
-      {!isLoading && error.length === 0 && filteredCars.length > 0 && (
+      {!isLoading && !isError && filteredCars.length > 0 && (
         <div className="car-list">
           {filteredCars.map((car: Car) => (
             <CarItem 

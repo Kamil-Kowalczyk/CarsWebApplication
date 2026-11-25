@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import type { NewCar } from '../models/Car';
+import type { CarFormValues } from '../models/CarFormValues';
 import { FuelType, BodyType, FuelTypeLabels, BodyTypeLabels } from '../models/Car';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { FormState, useForm } from 'react-hook-form';
+import { getFeatures } from '../services/carService';
+import { queryKeys } from '../queries/queryKey';
 
 interface CarFormProps {
-  initialValues?: Partial<NewCar>;
-  onSubmit: (car: NewCar) => Promise<void>;
+  initialValues?: Partial<CarFormValues>;
+  onSubmit: (car: CarFormValues) => Promise<void>;
   submitButtonText?: string;
+  isSubmitting?: boolean;
   onCancel?: () => void;
 }
 
@@ -13,70 +18,73 @@ export const CarForm = ({
   initialValues,
   onSubmit,
   submitButtonText = 'Save',
+  isSubmitting = false,
   onCancel
 }: CarFormProps) => {
-  const [formData, setFormData] = useState<NewCar>({
-    brand: initialValues?.brand ?? '',
-    model: initialValues?.model ?? '',
-    doorsNumber: initialValues?.doorsNumber ?? 5,
-    luggageCapacity: initialValues?.luggageCapacity ?? 450,
-    engineCapacity: initialValues?.engineCapacity ?? 1600,
-    fuelType: initialValues?.fuelType ?? FuelType.Petrol,
-    productionDate: initialValues?.productionDate?.split('T')[0] ?? new Date().toISOString().split('T')[0],
-    averageFuelConsumption: initialValues?.averageFuelConsumption ?? 6.0,
-    bodyType: initialValues?.bodyType ?? BodyType.Sedan
+  const queryClient = useQueryClient();
+  // =========================================================
+  // TANSTACK QUERY -- FEATURES
+  // =========================================================
+  const { data: features = [], isPending: featuresPending } = useQuery({
+    queryKey: queryKeys.features,
+    queryFn: ({ signal }) => getFeatures(signal),
   });
-  console.log(formData.productionDate)
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string>('');
-  
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === 'number' || name === 'fuelType' || name === 'bodyType'
-          ? Number(value)
-          : value
-    }));
-  };
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError('');
 
-    try {
-      await onSubmit(formData);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred while saving.');
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  // =========================================================
+  // REACT HOOK FORM
+  // =========================================================
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CarFormValues>({
+    defaultValues: {
+      brand: initialValues?.brand ?? '',
+      model: initialValues?.model ?? '',
+      doorsNumber: initialValues?.doorsNumber ?? 5,
+      luggageCapacity: initialValues?.luggageCapacity ?? 450,
+      engineCapacity: initialValues?.engineCapacity ?? 1600,
+      fuelType: initialValues?.fuelType ?? FuelType.Petrol,
+      productionDate: initialValues?.productionDate?.split('T')[0] ?? new Date().toISOString().split('T')[0],
+      averageFuelConsumption: initialValues?.averageFuelConsumption ?? 6.0,
+      bodyType: initialValues?.bodyType ?? BodyType.Sedan,
+      featureIds: initialValues?.featureIds ?? []
+    },
+  });
+
+
+  // =========================================================
+  // SUBMIT
+  // =========================================================
+  function handleFormSubmit(values: CarFormValues) {
+    onSubmit(values)
+  }
 
   return (
-    <form className="car-form" onSubmit={handleSubmit}>
-      {error && <div className="alert alert-error">{error}</div>}
+    <form className="car-form" onSubmit={handleSubmit(handleFormSubmit)}>
+      
 
       <div className="form-grid">
         <div className="form-group">
           <label htmlFor="brand">Brand *</label>
           <input
             id="brand"
-            name="brand"
             type="text"
-            required
-            value={formData.brand}
-            onChange={handleChange}
             placeholder="e.g. Toyota"
+            {...register("brand", {
+              required: "Brand is required",
+
+              minLength: {
+                value: 2,
+
+                message: "Brand has to have at least 2 characters"
+              }
+            })}
           />
+          {errors.brand && (
+            <p>{errors.brand.message}</p>
+          )}
         </div>
 
         <div className="form-group">
@@ -86,8 +94,6 @@ export const CarForm = ({
             name="model"
             type="text"
             required
-            value={formData.model}
-            onChange={handleChange}
             placeholder="e.g. Corolla"
           />
         </div>
@@ -101,8 +107,6 @@ export const CarForm = ({
             min={1}
             max={10}
             required
-            value={formData.doorsNumber}
-            onChange={handleChange}
           />
         </div>
 
@@ -114,8 +118,6 @@ export const CarForm = ({
             type="number"
             min={0}
             required
-            value={formData.luggageCapacity}
-            onChange={handleChange}
           />
         </div>
 
@@ -127,8 +129,6 @@ export const CarForm = ({
             type="number"
             min={0}
             required
-            value={formData.engineCapacity}
-            onChange={handleChange}
           />
         </div>
 
@@ -137,8 +137,6 @@ export const CarForm = ({
           <select
             id="fuelType"
             name="fuelType"
-            value={formData.fuelType}
-            onChange={handleChange}
           >
             {Object.entries(FuelTypeLabels).map(([val, label]) => (
               <option key={val} value={val}>
@@ -155,8 +153,6 @@ export const CarForm = ({
             name="productionDate"
             type="date"
             required
-            value={formData.productionDate}
-            onChange={handleChange}
           />
         </div>
 
@@ -171,8 +167,6 @@ export const CarForm = ({
             step="0.1"
             min={0}
             required
-            value={formData.averageFuelConsumption}
-            onChange={handleChange}
           />
         </div>
 
@@ -181,8 +175,6 @@ export const CarForm = ({
           <select
             id="bodyType"
             name="bodyType"
-            value={formData.bodyType}
-            onChange={handleChange}
           >
             {Object.entries(BodyTypeLabels).map(([val, label]) => (
               <option key={val} value={val}>
@@ -190,6 +182,29 @@ export const CarForm = ({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="bodyType">Equipment *</label>
+            {featuresPending ? (
+                <p>Loading Equipment...</p>
+              ) : (
+                <div className="">
+                  {features.map((feature) => (
+                    <div className="" key={feature.id}>
+                      <label className="">
+                        <input
+                          className=""
+                          type="checkbox"
+                          value={feature.id}
+                          {...register("featureIds")}
+                        />
+                        <span className="">{feature.name}</span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
         </div>
       </div>
 
